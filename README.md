@@ -36,7 +36,7 @@ vagrant     |  虚拟化分布式环境, 采用传统方式部署应用.
     
 ### 三. 部署应用
 
-目前使用了两种应用部署方式:传统部署方式和容器化部署方式
+目前使用了三种应用部署方式:传统部署方式、Ansible部署方式和容器化部署方式
 
 #### 1. 传统部署
  如果你熟悉[vagrant](https://www.vagrantup.com/), vagrant目录下有具体部署细节. 参考[Vagrantfile](https://github.com/buptmiao/microservice-app/blob/master/vagrant/Vagrantfile) 和 [provision.sh](https://github.com/buptmiao/microservice-app/blob/master/vagrant/provision.sh)
@@ -103,7 +103,41 @@ $ exit
 ```
 这样, 对于feed相关的请求,apigateway会把每一个请求通过round robin的方式均衡的打到两个feed实例上,实现进程内负载均衡. 同样需要注意: 原则上说, 微服务都应该是无状态的. 然而为了简单,该项目中的微服务实例都是采用内存存储. 所以在多实例环境下, 如果你发布了一条feed, 却没有拉取到, 那么多试几次即可.
 
-#### 2. 容器化部署
+#### 2. Ansible部署
+
+如果你熟悉[Ansible](https://www.ansible.com/), `ansible`目录下提供了完整的部署配方. 该方式同样部署5个节点(与传统部署方式相同的IP和服务分配), 每个服务以systemd守护进程方式运行.
+
+目录结构如下:
+```
+ansible/
+├── inventory               # 主机清单 (5个节点及分组)
+├── group_vars/
+│   └── all.yml             # 公共变量 (版本号, etcd端点, 安装路径等)
+├── roles/
+│   ├── common/             # 安装公共依赖 (wget, git, mercurial)
+│   ├── etcd/               # 安装并启动 etcd (node-0)
+│   ├── feed/               # 安装并启动 feed 服务 (node-1)
+│   ├── profile/            # 安装并启动 profile 服务 (node-2)
+│   ├── topic/              # 安装并启动 topic 服务 (node-3)
+│   └── apigateway/         # 安装并启动 apigateway (node-4)
+└── playbook.yml            # 主 playbook
+```
+
+**前提条件**: 确保已安装 [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/index.html), 并且5个节点已运行 (例如通过 `vagrant up /node-[0-4]/` 启动).
+
+在`ansible`目录下, 执行如下命令部署所有服务:
+```bash
+cd ansible
+ansible-playbook -i inventory playbook.yml
+```
+
+部署完成后, 与传统部署方式一样可以访问服务 (apigateway 运行在 node-4):
+```
+$ curl -XPUT "http://192.168.50.14:8080/api/feed/create_feed" -d '{"id": 100, "user_id": 123, "content": "hello world"}'
+$ curl -XGET "http://192.168.50.14:8080/api/feed/get_feeds?user_id=123&&size=2"
+```
+
+#### 3. 容器化部署
 
 如果你对docker熟悉的话, docker目录下提供了构建镜像的脚本 [build.sh](https://github.com/buptmiao/microservice-app/blob/master/docker/build.sh).
 ```

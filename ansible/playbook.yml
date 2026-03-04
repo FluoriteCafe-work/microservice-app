@@ -1,0 +1,35 @@
+---
+- name: Deploy etcd
+  hosts: etcd
+  become: yes
+  roles:
+    - common
+    - etcd
+
+- name: Deploy feed service
+  hosts: feed
+  become: yes
+  roles:
+    - common
+    - feed
+
+- name: Deploy profile service
+  hosts: profile
+  become: yes
+  roles:
+    - common
+    - profile
+
+- name: Deploy topic service
+  hosts: topic
+  become: yes
+  roles:
+    - common
+    - topic
+
+- name: Deploy apigateway
+  hosts: apigateway
+  become: yes
+  roles:
+    - common
+    - apigateway

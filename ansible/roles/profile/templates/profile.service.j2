@@ -1,0 +1,14 @@
+[Unit]
+Description=Profile microservice
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={{ install_dir }}/profile \
+  -addr={{ ansible_host }}:8083 \
+  -etcd.addr={{ etcd_endpoint }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

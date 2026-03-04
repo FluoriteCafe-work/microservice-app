@@ -1,0 +1,24 @@
+[etcd]
+node-0 ansible_host=192.168.50.10
+
+[feed]
+node-1 ansible_host=192.168.50.11
+
+[profile]
+node-2 ansible_host=192.168.50.12
+
+[topic]
+node-3 ansible_host=192.168.50.13
+
+[apigateway]
+node-4 ansible_host=192.168.50.14
+
+[microservices:children]
+feed
+profile
+topic
+apigateway
+
+[all:vars]
+ansible_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key

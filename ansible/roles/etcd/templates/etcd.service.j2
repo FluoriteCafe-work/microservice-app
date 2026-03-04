@@ -1,0 +1,15 @@
+[Unit]
+Description=etcd key-value store
+Documentation=https://github.com/coreos/etcd
+After=network.target
+
+[Service]
+Type=notify
+ExecStart={{ install_dir }}/etcd \
+  --listen-client-urls {{ etcd_endpoint }} \
+  --advertise-client-urls {{ etcd_endpoint }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Feed microservice
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={{ install_dir }}/feed \
+  -addr={{ ansible_host }}:8082 \
+  -etcd.addr={{ etcd_endpoint }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

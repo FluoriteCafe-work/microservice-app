@@ -1,0 +1,8 @@
+---
+etcd_version: "v3.0.0"
+app_version: "v1.0.1"
+etcd_endpoint: "http://192.168.50.10:2379"
+install_dir: /usr/local/bin
+
+etcd_download_url: "https://github.com/coreos/etcd/releases/download/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-amd64.tar.gz"
+app_download_url: "https://github.com/buptmiao/microservice-app/releases/download/{{ app_version }}/microservice-app-{{ app_version }}-linux-amd64.tar.gz"
